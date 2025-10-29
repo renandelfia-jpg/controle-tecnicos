@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Localizar Técnico Mais Próximo</title>
+  <style>
+    body { font-family: Arial; margin: 50px; }
+    input { padding: 8px; width: 300px; }
+    button { padding: 8px 15px; margin-left: 5px; }
+    .resultado { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Verificar Técnico Mais Próximo</h2>
+  <input type="text" id="endereco" placeholder="Endereço do atendimento">
+  <button onclick="buscar()">Buscar</button>
+
+  <div class="resultado" id="resultado"></div>
+
+  <script>
+    async function buscar() {
+      const endereco = document.getElementById('endereco').value;
+      const res = await fetch('/calcular', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endereco })
+      });
+      const data = await res.json();
+      if (data.erro) return document.getElementById('resultado').innerHTML = data.erro;
+
+      const t = data.tecnico;
+      document.getElementById('resultado').innerHTML = `
+        <h3>Técnico mais próximo:</h3>
+        <p><b>${t.NOME}</b> (${t["CIDADE"]} - ${t["UF"]})</p>
+        <p>Distância: ${t.distancia} km</p>
+        <p>Valor estimado: R$ ${t.valor}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
